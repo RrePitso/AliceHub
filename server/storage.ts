@@ -7,10 +7,10 @@ import {
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
 import session from "express-session";
-import connectPg from "connect-pg-simple";
+import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 
-const PostgresSessionStore = connectPg(session);
+const PostgresSessionStore = connectPgSimple(session);
 
 export interface IStorage {
   // User operations
@@ -59,11 +59,11 @@ export interface IStorage {
     activeDrivers: number;
   }>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class DatabaseStorage implements IStorage {
-  public sessionStore: session.SessionStore;
+  public sessionStore: any;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
@@ -89,7 +89,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    const [user] = await db.insert(users).values([insertUser]).returning();
     return user;
   }
 
@@ -138,7 +138,7 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const [order] = await db.insert(orders).values(insertOrder).returning();
+    const [order] = await db.insert(orders).values([insertOrder]).returning();
     return order;
   }
 
