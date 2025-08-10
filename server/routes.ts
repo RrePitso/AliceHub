@@ -4,7 +4,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { 
   insertVendorSchema, insertMenuItemSchema, insertOrderSchema, insertDriverSchema,
-  type User
+  type User, type Order
 } from "@shared/schema";
 import { ZodError } from "zod";
 
@@ -52,9 +52,10 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/vendors", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
+      const user = req.user as User;
       const validatedData = insertVendorSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: user.id,
       });
       const vendor = await storage.createVendor(validatedData);
       res.status(201).json(vendor);
@@ -88,8 +89,9 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/menu-items", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
+      const user = req.user as User;
       // Verify vendor ownership
-      const vendor = await storage.getVendorByUserId(req.user.id);
+      const vendor = await storage.getVendorByUserId(user.id);
       if (!vendor) {
         return res.status(403).json({ message: "Vendor account required" });
       }
@@ -121,9 +123,10 @@ export function registerRoutes(app: Express): Server {
   // Order routes
   app.post("/api/orders", requireAuth, requireRole("customer"), async (req, res) => {
     try {
+      const user = req.user as User;
       const validatedData = insertOrderSchema.parse({
         ...req.body,
-        customerId: req.user.id,
+        customerId: user.id,
         status: "pending",
       });
       const order = await storage.createOrder(validatedData);
@@ -163,7 +166,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/my-orders", requireAuth, async (req, res) => {
     try {
       const user = req.user as User;
-      let orders;
+      let orders: Order[] = [];
 
       if (user.role === "customer") {
         orders = await storage.getOrdersByCustomer(user.id);
@@ -173,11 +176,7 @@ export function registerRoutes(app: Express): Server {
         const vendor = await storage.getVendorByUserId(user.id);
         if (vendor) {
           orders = await storage.getOrdersByVendor(vendor.id);
-        } else {
-          orders = [];
         }
-      } else {
-        orders = [];
       }
 
       res.json(orders);
@@ -224,7 +223,8 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/orders/:id/assign", requireAuth, requireRole("driver"), async (req, res) => {
     try {
-      await storage.assignDriverToOrder(req.params.id, req.user.id);
+      const user = req.user as User;
+      await storage.assignDriverToOrder(req.params.id, user.id);
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to assign order" });
@@ -233,9 +233,10 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/drivers", requireAuth, requireRole("driver"), async (req, res) => {
     try {
+      const user = req.user as User;
       const validatedData = insertDriverSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: user.id,
       });
       const driver = await storage.createDriver(validatedData);
       res.status(201).json(driver);

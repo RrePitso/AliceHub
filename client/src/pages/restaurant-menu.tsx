@@ -158,7 +158,7 @@ export default function RestaurantMenu() {
     );
   }
 
-  const categories = [...new Set(menuItems.map(item => item.category))];
+  const categories = Array.from(new Set(menuItems.map(item => item.category)));
 
   return (
     <div className="min-h-screen bg-slate-50">
