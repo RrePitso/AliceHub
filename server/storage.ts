@@ -89,7 +89,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values([insertUser]).returning();
+    const [user] = await db.insert(users).values([{
+      ...insertUser,
+      role: insertUser.role as "customer" | "driver" | "vendor" | "admin"
+    }]).returning();
     return user;
   }
 
@@ -138,7 +141,10 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const [order] = await db.insert(orders).values([insertOrder]).returning();
+    const [order] = await db.insert(orders).values([{
+      ...insertOrder,
+      status: insertOrder.status as "pending" | "accepted" | "preparing" | "ready" | "picked_up" | "delivered" | "cancelled"
+    }]).returning();
     return order;
   }
 

@@ -187,6 +187,7 @@ export default function AuthPage() {
                       <SelectItem value="customer">Customer</SelectItem>
                       <SelectItem value="driver">Driver</SelectItem>
                       <SelectItem value="vendor">Vendor</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
