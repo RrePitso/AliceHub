@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/navigation";
 import RestaurantCard from "@/components/restaurant-card";
 import { Link } from "wouter";
-import type { Vendor } from "@shared/schema";
+import type { Vendor } from "@shared/schema.client";
 
 const categories = [
   { name: "Pizza", icon: "fa-pizza-slice", color: "orange" },
