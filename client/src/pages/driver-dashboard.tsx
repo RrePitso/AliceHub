@@ -6,7 +6,7 @@ import Navigation from "@/components/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Order } from "@shared/schema";
+import type { Order } from "@shared/schema.client";
 
 export default function DriverDashboard() {
   const { user } = useAuth();

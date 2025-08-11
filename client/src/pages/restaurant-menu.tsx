@@ -10,7 +10,7 @@ import Navigation from "@/components/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Vendor, MenuItem } from "@shared/schema";
+import type { Vendor, MenuItem } from "@shared/schema.client";
 
 export default function RestaurantMenu() {
   const { id } = useParams<{ id: string }>();

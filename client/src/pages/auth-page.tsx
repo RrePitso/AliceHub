@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema } from "@shared/schema.client";
 import { z } from "zod";
 import { Redirect } from "wouter";
 

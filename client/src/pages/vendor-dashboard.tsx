@@ -7,7 +7,7 @@ import Navigation from "@/components/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Order, Vendor, MenuItem } from "@shared/schema";
+import type { Order, Vendor, MenuItem } from "@shared/schema.client";
 
 export default function VendorDashboard() {
   const { user } = useAuth();
