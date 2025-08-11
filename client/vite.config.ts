@@ -17,6 +17,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['drizzle-orm'],
       // same allow for build time
       // Not always necessary but can help
     },
