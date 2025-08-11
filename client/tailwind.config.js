@@ -3,12 +3,12 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,css}",
-    "./src/**/*.{css}",
     "../shared/**/*.{js,ts,jsx,tsx,css}", // include shared folder for tailwind scanning
   ],
   theme: {
     extend: {
       colors: {
+        background: "#f9fafb", // Light gray
         border: "#D1D5DB", // example light gray for border-border class
         primary: {
           50: '#f5faff',
