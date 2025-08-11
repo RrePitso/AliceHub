@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        foreground: "#111827",
         background: "#f9fafb", // Light gray
         border: "#D1D5DB", // example light gray for border-border class
         primary: {
