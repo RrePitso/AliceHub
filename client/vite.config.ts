@@ -7,7 +7,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      "@shared": path.resolve(__dirname, "../shared")
+      // Alias @shared/schema explicitly to schema.client.ts for frontend-safe imports
+      '@shared/schema': path.resolve(__dirname, '../shared/schema.client.ts'),
+      // Keep @shared pointing to the whole shared folder for other imports
+      '@shared': path.resolve(__dirname, '../shared'),
     },
   },
   server: {
@@ -18,8 +21,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: ['drizzle-orm'],
-      // same allow for build time
-      // Not always necessary but can help
+      // You can add other externals here if needed
     },
   },
 });
