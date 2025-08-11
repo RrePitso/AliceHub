@@ -10,5 +10,16 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "../shared")
     },
   },
+  server: {
+    fs: {
+      allow: ['..'], // allow access to parent folder
+    },
+  },
+  build: {
+    rollupOptions: {
+      // same allow for build time
+      // Not always necessary but can help
+    },
+  },
 });
 
