@@ -10,7 +10,7 @@ export default defineConfig({
       // Alias @shared/schema explicitly to schema.client.ts for frontend-safe imports
       '@shared/schema': path.resolve(__dirname, '../shared/schema.client.ts'),
       // Keep @shared pointing to the whole shared folder for other imports
-      '@shared': path.resolve(__dirname, '../shared'),
+      //'@shared': path.resolve(__dirname, '../shared'),
     },
   },
   server: {
