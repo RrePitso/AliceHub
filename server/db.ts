@@ -11,7 +11,7 @@ neonConfig.webSocketConstructor = ws;
 // 1. Render internal (for deployed server inside Render)
 // 2. External (for local/dev) via DATABASE_URL env variable
 const INTERNAL_DB_URL =
-  'postgresql://alicedeliveryhub_user:pbK1eHC6bOMiv2cK14gsUVt2uAAcy3ph@dpg-d2ce7u95pdvs73djgvm0-a/alicedeliveryhub';
+  'postgresql://alicehub_user:kpDTJFEw0k46SfL28QSCdr2EdIEN99fS@dpg-d2f3aa3ipnbc739m5090-a/alicehub_db';
 
 const DATABASE_URL = process.env.DATABASE_URL || INTERNAL_DB_URL;
 
