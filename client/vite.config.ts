@@ -7,12 +7,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // Alias @shared/schema explicitly to schema.client.ts for frontend-safe imports
       '@shared/schema': path.resolve(__dirname, '../shared/schema.client.ts'),
-      // Keep @shared pointing to the whole shared folder for other imports
-      //'@shared': path.resolve(__dirname, '../shared'),
+      // do NOT alias the full shared folder
     },
   },
+
   server: {
     fs: {
       allow: ['..'], // allow access to parent folder
