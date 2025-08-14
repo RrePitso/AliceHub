@@ -3,7 +3,7 @@ import {
   type User, type InsertUser, type Vendor, type InsertVendor,
   type MenuItem, type InsertMenuItem, type Order, type InsertOrder,
   type Driver, type InsertDriver
-} from "@shared/schema";
+} from "./shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
 import session from "express-session";

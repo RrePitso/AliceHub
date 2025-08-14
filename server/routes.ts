@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { 
   insertVendorSchema, insertMenuItemSchema, insertOrderSchema, insertDriverSchema,
   type User, type Order
-} from "@shared/schema";
+} from "./shared/schema";
 import { ZodError } from "zod";
 
 export function registerRoutes(app: Express): Server {
@@ -28,12 +28,12 @@ export function registerRoutes(app: Express): Server {
     next();
   };
 
-  // Vendor routes
+  // --- Vendor routes ---
   app.get("/api/vendors", async (req, res) => {
     try {
       const vendors = await storage.getVendors();
       res.json(vendors);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch vendors" });
     }
   });
@@ -41,11 +41,9 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/vendors/:id", async (req, res) => {
     try {
       const vendor = await storage.getVendor(req.params.id);
-      if (!vendor) {
-        return res.status(404).json({ message: "Vendor not found" });
-      }
+      if (!vendor) return res.status(404).json({ message: "Vendor not found" });
       res.json(vendor);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch vendor" });
     }
   });
@@ -53,36 +51,30 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/vendors", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
       const user = req.user as User;
-      const validatedData = insertVendorSchema.parse({
-        ...req.body,
-        userId: user.id,
-      });
-      const vendor = await storage.createVendor(validatedData);
+      const validated = insertVendorSchema.parse({ ...req.body, userId: user.id });
+      const vendor = await storage.createVendor(validated);
       res.status(201).json(vendor);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ message: "Invalid vendor data", errors: error.errors });
-      }
+    } catch (err) {
+      if (err instanceof ZodError) return res.status(400).json({ message: "Invalid vendor data", errors: err.errors });
       res.status(500).json({ message: "Failed to create vendor" });
     }
   });
 
   app.put("/api/vendors/:id/status", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
-      const { isOpen } = req.body;
-      await storage.updateVendorStatus(req.params.id, isOpen);
+      await storage.updateVendorStatus(req.params.id, req.body.isOpen);
       res.json({ success: true });
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to update vendor status" });
     }
   });
 
-  // Menu routes
+  // --- Menu routes ---
   app.get("/api/vendors/:vendorId/menu", async (req, res) => {
     try {
-      const menuItems = await storage.getMenuItems(req.params.vendorId);
-      res.json(menuItems);
-    } catch (error) {
+      const menu = await storage.getMenuItems(req.params.vendorId);
+      res.json(menu);
+    } catch {
       res.status(500).json({ message: "Failed to fetch menu items" });
     }
   });
@@ -90,51 +82,36 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/menu-items", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
       const user = req.user as User;
-      // Verify vendor ownership
       const vendor = await storage.getVendorByUserId(user.id);
-      if (!vendor) {
-        return res.status(403).json({ message: "Vendor account required" });
-      }
+      if (!vendor) return res.status(403).json({ message: "Vendor account required" });
 
-      const validatedData = insertMenuItemSchema.parse({
-        ...req.body,
-        vendorId: vendor.id,
-      });
-      const menuItem = await storage.createMenuItem(validatedData);
+      const validated = insertMenuItemSchema.parse({ ...req.body, vendorId: vendor.id });
+      const menuItem = await storage.createMenuItem(validated);
       res.status(201).json(menuItem);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ message: "Invalid menu item data", errors: error.errors });
-      }
+    } catch (err) {
+      if (err instanceof ZodError) return res.status(400).json({ message: "Invalid menu item data", errors: err.errors });
       res.status(500).json({ message: "Failed to create menu item" });
     }
   });
 
   app.put("/api/menu-items/:id/availability", requireAuth, requireRole("vendor"), async (req, res) => {
     try {
-      const { isAvailable } = req.body;
-      await storage.updateMenuItemAvailability(req.params.id, isAvailable);
+      await storage.updateMenuItemAvailability(req.params.id, req.body.isAvailable);
       res.json({ success: true });
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to update menu item availability" });
     }
   });
 
-  // Order routes
+  // --- Order routes ---
   app.post("/api/orders", requireAuth, requireRole("customer"), async (req, res) => {
     try {
       const user = req.user as User;
-      const validatedData = insertOrderSchema.parse({
-        ...req.body,
-        customerId: user.id,
-        status: "pending",
-      });
-      const order = await storage.createOrder(validatedData);
+      const validated = insertOrderSchema.parse({ ...req.body, customerId: user.id, status: "pending" });
+      const order = await storage.createOrder(validated);
       res.status(201).json(order);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ message: "Invalid order data", errors: error.errors });
-      }
+    } catch (err) {
+      if (err instanceof ZodError) return res.status(400).json({ message: "Invalid order data", errors: err.errors });
       res.status(500).json({ message: "Failed to create order" });
     }
   });
@@ -142,23 +119,14 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/orders/:id", requireAuth, async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
+      if (!order) return res.status(404).json({ message: "Order not found" });
 
-      // Check if user has permission to view this order
       const user = req.user as User;
-      const canView = order.customerId === user.id || 
-                     order.driverId === user.id ||
-                     user.role === "admin" ||
-                     (user.role === "vendor" && order.vendorId);
-
-      if (!canView) {
-        return res.status(403).json({ message: "Access denied" });
-      }
+      const canView = order.customerId === user.id || order.driverId === user.id || user.role === "admin" || (user.role === "vendor" && order.vendorId);
+      if (!canView) return res.status(403).json({ message: "Access denied" });
 
       res.json(order);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch order" });
     }
   });
@@ -167,20 +135,14 @@ export function registerRoutes(app: Express): Server {
     try {
       const user = req.user as User;
       let orders: Order[] = [];
-
-      if (user.role === "customer") {
-        orders = await storage.getOrdersByCustomer(user.id);
-      } else if (user.role === "driver") {
-        orders = await storage.getOrdersByDriver(user.id);
-      } else if (user.role === "vendor") {
+      if (user.role === "customer") orders = await storage.getOrdersByCustomer(user.id);
+      else if (user.role === "driver") orders = await storage.getOrdersByDriver(user.id);
+      else if (user.role === "vendor") {
         const vendor = await storage.getVendorByUserId(user.id);
-        if (vendor) {
-          orders = await storage.getOrdersByVendor(vendor.id);
-        }
+        if (vendor) orders = await storage.getOrdersByVendor(vendor.id);
       }
-
       res.json(orders);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
@@ -190,33 +152,26 @@ export function registerRoutes(app: Express): Server {
       const { status } = req.body;
       const user = req.user as User;
       const order = await storage.getOrder(req.params.id);
+      if (!order) return res.status(404).json({ message: "Order not found" });
 
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-
-      // Check permissions based on role and status
       const canUpdate = (user.role === "vendor" && ["accepted", "preparing", "ready"].includes(status)) ||
-                       (user.role === "driver" && ["picked_up", "delivered"].includes(status)) ||
-                       user.role === "admin";
-
-      if (!canUpdate) {
-        return res.status(403).json({ message: "Cannot update order status" });
-      }
+                        (user.role === "driver" && ["picked_up", "delivered"].includes(status)) ||
+                        user.role === "admin";
+      if (!canUpdate) return res.status(403).json({ message: "Cannot update order status" });
 
       await storage.updateOrderStatus(req.params.id, status);
       res.json({ success: true });
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to update order status" });
     }
   });
 
-  // Driver routes
+  // --- Driver routes ---
   app.get("/api/available-orders", requireAuth, requireRole("driver"), async (req, res) => {
     try {
       const orders = await storage.getAvailableOrders();
       res.json(orders);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch available orders" });
     }
   });
@@ -226,7 +181,7 @@ export function registerRoutes(app: Express): Server {
       const user = req.user as User;
       await storage.assignDriverToOrder(req.params.id, user.id);
       res.json({ success: true });
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to assign order" });
     }
   });
@@ -234,36 +189,30 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/drivers", requireAuth, requireRole("driver"), async (req, res) => {
     try {
       const user = req.user as User;
-      const validatedData = insertDriverSchema.parse({
-        ...req.body,
-        userId: user.id,
-      });
-      const driver = await storage.createDriver(validatedData);
+      const validated = insertDriverSchema.parse({ ...req.body, userId: user.id });
+      const driver = await storage.createDriver(validated);
       res.status(201).json(driver);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({ message: "Invalid driver data", errors: error.errors });
-      }
+    } catch (err) {
+      if (err instanceof ZodError) return res.status(400).json({ message: "Invalid driver data", errors: err.errors });
       res.status(500).json({ message: "Failed to create driver profile" });
     }
   });
 
   app.put("/api/drivers/:id/status", requireAuth, requireRole("driver"), async (req, res) => {
     try {
-      const { isOnline } = req.body;
-      await storage.updateDriverOnlineStatus(req.params.id, isOnline);
+      await storage.updateDriverOnlineStatus(req.params.id, req.body.isOnline);
       res.json({ success: true });
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to update driver status" });
     }
   });
 
-  // Admin routes
+  // --- Admin routes ---
   app.get("/api/admin/users", requireAuth, requireRole("admin"), async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch users" });
     }
   });
@@ -272,7 +221,7 @@ export function registerRoutes(app: Express): Server {
     try {
       const orders = await storage.getAllOrders();
       res.json(orders);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
@@ -281,11 +230,10 @@ export function registerRoutes(app: Express): Server {
     try {
       const stats = await storage.getPlatformStats();
       res.json(stats);
-    } catch (error) {
+    } catch {
       res.status(500).json({ message: "Failed to fetch platform stats" });
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  return createServer(app);
 }
