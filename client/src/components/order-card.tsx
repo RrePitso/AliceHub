@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import type { Order } from "@shared/schema.client";
+import type { Order } from "@shared/schema";
 
 interface OrderCardProps {
   order: Order;

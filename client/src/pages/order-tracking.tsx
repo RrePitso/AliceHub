@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/navigation";
-import type { Order } from "@shared/schema.client";
+import type { Order } from "@shared/schema";
 
 export default function OrderTracking() {
   const { id } = useParams<{ id: string }>();

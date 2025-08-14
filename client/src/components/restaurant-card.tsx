@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import type { Vendor } from "@shared/schema.client";
+import type { Vendor } from "@shared/schema";
 
 interface RestaurantCardProps {
   vendor: Vendor;

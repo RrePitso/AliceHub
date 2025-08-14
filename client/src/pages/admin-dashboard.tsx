@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navigation from "@/components/navigation";
-import type { Order, User } from "@shared/schema.client";
+import type { Order, User } from "@shared/schema";
 
 type PlatformStats = {
   totalOrders: number;
