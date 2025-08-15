@@ -33,7 +33,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const vendors = await storage.getVendors();
       res.json(vendors);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/vendors:", err);
       res.status(500).json({ message: "Failed to fetch vendors" });
     }
   });
@@ -43,7 +44,8 @@ export function registerRoutes(app: Express): Server {
       const vendor = await storage.getVendor(req.params.id);
       if (!vendor) return res.status(404).json({ message: "Vendor not found" });
       res.json(vendor);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/vendors/:id:", err);
       res.status(500).json({ message: "Failed to fetch vendor" });
     }
   });
@@ -55,6 +57,7 @@ export function registerRoutes(app: Express): Server {
       const vendor = await storage.createVendor(validated);
       res.status(201).json(vendor);
     } catch (err) {
+      console.error("Error in POST /api/vendors:", err);
       if (err instanceof ZodError) return res.status(400).json({ message: "Invalid vendor data", errors: err.errors });
       res.status(500).json({ message: "Failed to create vendor" });
     }
@@ -64,7 +67,8 @@ export function registerRoutes(app: Express): Server {
     try {
       await storage.updateVendorStatus(req.params.id, req.body.isOpen);
       res.json({ success: true });
-    } catch {
+    } catch (err) {
+      console.error("Error in PUT /api/vendors/:id/status:", err);
       res.status(500).json({ message: "Failed to update vendor status" });
     }
   });
@@ -74,7 +78,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const menu = await storage.getMenuItems(req.params.vendorId);
       res.json(menu);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/vendors/:vendorId/menu:", err);
       res.status(500).json({ message: "Failed to fetch menu items" });
     }
   });
@@ -89,6 +94,7 @@ export function registerRoutes(app: Express): Server {
       const menuItem = await storage.createMenuItem(validated);
       res.status(201).json(menuItem);
     } catch (err) {
+      console.error("Error in POST /api/menu-items:", err);
       if (err instanceof ZodError) return res.status(400).json({ message: "Invalid menu item data", errors: err.errors });
       res.status(500).json({ message: "Failed to create menu item" });
     }
@@ -98,7 +104,8 @@ export function registerRoutes(app: Express): Server {
     try {
       await storage.updateMenuItemAvailability(req.params.id, req.body.isAvailable);
       res.json({ success: true });
-    } catch {
+    } catch (err) {
+      console.error("Error in PUT /api/menu-items/:id/availability:", err);
       res.status(500).json({ message: "Failed to update menu item availability" });
     }
   });
@@ -111,6 +118,7 @@ export function registerRoutes(app: Express): Server {
       const order = await storage.createOrder(validated);
       res.status(201).json(order);
     } catch (err) {
+      console.error("Error in POST /api/orders:", err);
       if (err instanceof ZodError) return res.status(400).json({ message: "Invalid order data", errors: err.errors });
       res.status(500).json({ message: "Failed to create order" });
     }
@@ -126,7 +134,8 @@ export function registerRoutes(app: Express): Server {
       if (!canView) return res.status(403).json({ message: "Access denied" });
 
       res.json(order);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/orders/:id:", err);
       res.status(500).json({ message: "Failed to fetch order" });
     }
   });
@@ -142,7 +151,8 @@ export function registerRoutes(app: Express): Server {
         if (vendor) orders = await storage.getOrdersByVendor(vendor.id);
       }
       res.json(orders);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/my-orders:", err);
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
@@ -161,7 +171,8 @@ export function registerRoutes(app: Express): Server {
 
       await storage.updateOrderStatus(req.params.id, status);
       res.json({ success: true });
-    } catch {
+    } catch (err) {
+      console.error("Error in PUT /api/orders/:id/status:", err);
       res.status(500).json({ message: "Failed to update order status" });
     }
   });
@@ -171,7 +182,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const orders = await storage.getAvailableOrders();
       res.json(orders);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/available-orders:", err);
       res.status(500).json({ message: "Failed to fetch available orders" });
     }
   });
@@ -181,7 +193,8 @@ export function registerRoutes(app: Express): Server {
       const user = req.user as User;
       await storage.assignDriverToOrder(req.params.id, user.id);
       res.json({ success: true });
-    } catch {
+    } catch (err) {
+      console.error("Error in POST /api/orders/:id/assign:", err);
       res.status(500).json({ message: "Failed to assign order" });
     }
   });
@@ -193,6 +206,7 @@ export function registerRoutes(app: Express): Server {
       const driver = await storage.createDriver(validated);
       res.status(201).json(driver);
     } catch (err) {
+      console.error("Error in POST /api/drivers:", err);
       if (err instanceof ZodError) return res.status(400).json({ message: "Invalid driver data", errors: err.errors });
       res.status(500).json({ message: "Failed to create driver profile" });
     }
@@ -202,7 +216,8 @@ export function registerRoutes(app: Express): Server {
     try {
       await storage.updateDriverOnlineStatus(req.params.id, req.body.isOnline);
       res.json({ success: true });
-    } catch {
+    } catch (err) {
+      console.error("Error in PUT /api/drivers/:id/status:", err);
       res.status(500).json({ message: "Failed to update driver status" });
     }
   });
@@ -212,7 +227,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/admin/users:", err);
       res.status(500).json({ message: "Failed to fetch users" });
     }
   });
@@ -221,7 +237,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const orders = await storage.getAllOrders();
       res.json(orders);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/admin/orders:", err);
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
@@ -230,7 +247,8 @@ export function registerRoutes(app: Express): Server {
     try {
       const stats = await storage.getPlatformStats();
       res.json(stats);
-    } catch {
+    } catch (err) {
+      console.error("Error in GET /api/admin/stats:", err);
       res.status(500).json({ message: "Failed to fetch platform stats" });
     }
   });

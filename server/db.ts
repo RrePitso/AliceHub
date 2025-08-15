@@ -1,4 +1,3 @@
-// server/db.ts
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from 'ws';
@@ -7,9 +6,7 @@ import * as schema from './shared/schema';
 // Use WebSocket constructor for Neon serverless
 neonConfig.webSocketConstructor = ws;
 
-// Choose database URL:
-// 1. Render internal (for deployed server inside Render)
-// 2. External (for local/dev) via DATABASE_URL env variable
+// Use internal Render DB URL by default, fallback to env variable
 const INTERNAL_DB_URL =
   'postgresql://alicehub_user:kpDTJFEw0k46SfL28QSCdr2EdIEN99fS@dpg-d2f3aa3ipnbc739m5090-a/alicehub_db';
 
@@ -26,3 +23,14 @@ export const pool = new Pool({ connectionString: DATABASE_URL });
 
 // Initialize Drizzle ORM with the schema
 export const db = drizzle({ client: pool, schema });
+
+// Optional: test connection immediately
+(async () => {
+  try {
+    const client = await pool.connect();
+    console.log("✅ Successfully connected to the database");
+    client.release();
+  } catch (err) {
+    console.error("❌ Database connection error:", err);
+  }
+})();

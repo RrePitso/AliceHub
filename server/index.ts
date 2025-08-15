@@ -1,8 +1,9 @@
-//import "dotenv/config"; // this loads variables from .env automatically
+// import "dotenv/config"; // Commented out since environment variables are set on Render
 
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { pool } from "./db";
 
 const app = express();
 
@@ -35,15 +36,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Check database connection on startup
+pool.connect()
+  .then(() => console.log("✅ Database connected successfully"))
+  .catch(err => console.error("❌ Database connection failed:", err));
+
 (async () => {
   const server = await registerRoutes(app);
 
   // Global error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    console.error("❌ Global error handler:", err);
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
     res.status(status).json({ message });
-    throw err;
   });
 
   // Vite dev setup or static serving

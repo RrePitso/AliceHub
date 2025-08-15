@@ -52,9 +52,10 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (user) {
-    const redirectPath = user.role === "driver" ? "/driver" :
-                        user.role === "vendor" ? "/vendor" :
-                        user.role === "admin" ? "/admin" : "/";
+    const redirectPath =
+      user.role === "driver" ? "/driver" :
+      user.role === "vendor" ? "/vendor" :
+      user.role === "admin" ? "/admin" : "/";
     return <Redirect to={redirectPath} />;
   }
 
@@ -87,36 +88,19 @@ export default function AuthPage() {
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                 <div>
                   <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    {...loginForm.register("username")}
-                    className="mt-1"
-                  />
+                  <Input id="username" {...loginForm.register("username")} className="mt-1" />
                   {loginForm.formState.errors.username && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {loginForm.formState.errors.username.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{loginForm.formState.errors.username.message}</p>
                   )}
                 </div>
                 <div>
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    {...loginForm.register("password")}
-                    className="mt-1"
-                  />
+                  <Input id="password" type="password" {...loginForm.register("password")} className="mt-1" />
                   {loginForm.formState.errors.password && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {loginForm.formState.errors.password.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{loginForm.formState.errors.password.message}</p>
                   )}
                 </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={loginMutation.isPending}
-                >
+                <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -125,61 +109,39 @@ export default function AuthPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      {...registerForm.register("firstName")}
-                      className="mt-1"
-                    />
+                    <Input id="firstName" {...registerForm.register("firstName")} className="mt-1" />
                     {registerForm.formState.errors.firstName && (
-                      <p className="text-sm text-red-600 mt-1">
-                        {registerForm.formState.errors.firstName.message}
-                      </p>
+                      <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.firstName.message}</p>
                     )}
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      {...registerForm.register("lastName")}
-                      className="mt-1"
-                    />
+                    <Input id="lastName" {...registerForm.register("lastName")} className="mt-1" />
                     {registerForm.formState.errors.lastName && (
-                      <p className="text-sm text-red-600 mt-1">
-                        {registerForm.formState.errors.lastName.message}
-                      </p>
+                      <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.lastName.message}</p>
                     )}
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    {...registerForm.register("username")}
-                    className="mt-1"
-                  />
+                  <Input id="username" {...registerForm.register("username")} className="mt-1" />
                   {registerForm.formState.errors.username && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {registerForm.formState.errors.username.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.username.message}</p>
                   )}
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...registerForm.register("email")}
-                    className="mt-1"
-                  />
+                  <Input id="email" type="email" {...registerForm.register("email")} className="mt-1" />
                   {registerForm.formState.errors.email && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {registerForm.formState.errors.email.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.email.message}</p>
                   )}
                 </div>
                 <div>
                   <Label htmlFor="role">Role</Label>
-                  <Select onValueChange={(value) => registerForm.setValue("role", value as any)} defaultValue="customer">
+                  <Select
+                    defaultValue="customer"
+                    onValueChange={(value) => registerForm.setValue("role", value as any)}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
@@ -193,16 +155,9 @@ export default function AuthPage() {
                 </div>
                 <div>
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    {...registerForm.register("password")}
-                    className="mt-1"
-                  />
+                  <Input id="password" type="password" {...registerForm.register("password")} className="mt-1" />
                   {registerForm.formState.errors.password && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {registerForm.formState.errors.password.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.password.message}</p>
                   )}
                 </div>
                 <div>
@@ -214,21 +169,15 @@ export default function AuthPage() {
                     className="mt-1"
                   />
                   {registerForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {registerForm.formState.errors.confirmPassword.message}
-                    </p>
+                    <p className="text-sm text-red-600 mt-1">{registerForm.formState.errors.confirmPassword.message}</p>
                   )}
                 </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={registerMutation.isPending}
-                >
+                <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
                   {registerMutation.isPending ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             )}
-            
+
             <div className="mt-6 text-center">
               <button
                 type="button"
