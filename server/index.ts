@@ -1,4 +1,4 @@
-import "dotenv/config"; // this loads variables from .env automatically
+//import "dotenv/config"; // this loads variables from .env automatically
 
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
